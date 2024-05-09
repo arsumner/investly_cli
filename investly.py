@@ -3,22 +3,26 @@ import time
 
 def calcBalances(age, retirementAge, initial401kBalance, employerContribution,
                  salary, individualContribution, rothBalance, rothReturn,
-                 rothContributions, brokerageBalance, brokerageReturn, brokerageContributions):
-    """Calculation logic for future account balance. Takes inputs as parameters for calculation."""
+                 rothContributions, brokerageBalance, brokerageReturn,
+                 brokerageContributions):
+    """Calculation logic for all three future account balances: 401k, Roth IRA
+    , and Brokerage. Takes user inputs as parameters, performs calculations
+    for each account, then  outputs each individual future account balance
+    and a total account balance."""
 
     # Brokerage logic
     futureBrokerageBalance = brokerageBalance
     curAge = age
     while curAge < retirementAge:
-        futureBrokerageBalance *= (1 + brokerageReturn / 100) 
+        futureBrokerageBalance *= (1 + brokerageReturn / 100)
         futureBrokerageBalance += brokerageContributions
         curAge += 1
 
-    # Roth logic
+    # Roth IRA logic
     futureRothBalance = rothBalance
     curAge = age
     while curAge < retirementAge:
-        futureRothBalance *= (1 + rothReturn / 100) 
+        futureRothBalance *= (1 + rothReturn / 100)
         futureRothBalance += rothContributions
         curAge += 1
 
@@ -29,8 +33,10 @@ def calcBalances(age, retirementAge, initial401kBalance, employerContribution,
         future401kBalance += ((1 + individualContribution / 100) * salary) + ((1 + employerContribution / 100) * salary)
         curAge += 1
 
+    # Cumulative account balance
     totalAccounts = future401kBalance + futureBrokerageBalance + futureRothBalance
 
+    # Prints all account balance
     print("\n  You have entered all necessary information! ")
     print("\n  Calculating future account balances... ")
     print("\n\n")
@@ -41,27 +47,26 @@ def calcBalances(age, retirementAge, initial401kBalance, employerContribution,
     print(f"   401(k) Balance: ${future401kBalance:,.2f}")
     print(f"   Roth IRA Balance: ${futureRothBalance:,.2f}")
     print(f"   Brokerage Account Balance: ${futureBrokerageBalance:,.2f}")
-    print(f"   In total you will have: ${totalAccounts:,.2f} when you retire.")  
+    print(f"   In total you will have: ${totalAccounts:,.2f} when you retire.")
     print("\n\n")
-
     return
 
+
 # Input validation functions:
-
-
 def validateAge(current_age, retirement_age):
     """Validates that retirement age is greater than current age."""
     return retirement_age >= current_age
 
 
 def validateRoth(rothContribution):
-    """Validates that Roth IRA contribution input by the user is less than the federal limit."""
+    """Validates that Roth IRA contribution input by the user is less than
+    the federal limit."""
     return rothContribution <= 7000
 
 
 def validate401k(salary, contributionPercentage):
-    """Validates that 401k contribution input by the user is a portion of their salary that amounts
-     to less than the federal limit."""
+    """Validates that 401k contribution input by the user is
+      a portion of their salary that amounts to less than the federal limit."""
     return (contributionPercentage / 100) * salary <= 23000
 
 
@@ -83,16 +88,18 @@ def main():
     $$$$$$$$$$$$$$$$$$$$$$$$$$$$│                                                               \______/ │$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     $$$$$$$$$$$$$$$$$$$$$$$$$$$$└────────────────────────────────────────────────────────────────────────┘$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     '''
- 
+
     print(header)
     print("                                            Welcome to the Investly Investment Calculator!")
     print("                 Check out our options below to try the Investment Calculator! You can enter '1' to start the Investment Calculator, ")
     print("                 which will calculate and display what your Roth IRA, 401k and Brokerage accounts will be worth when you retire. ")
     print("                 Need more information about the Investly Calculator or account types? Enter '2' to go to the FAQ page. When prompted, you ")
-    print("                 can stop this application by entering '3'. Happy investing! ")
+    print("                 can stop this application by entering '3'. The average amount of time it takes users to input their information and receive ")
+    print("                 future account balances is about 2 minutes! Happy investing! ")
     print("\n\n")
     time.sleep(4)
 
+    # Menu for users to make their selection.
     while True:
         print("      Please choose an option below to continue:")
         print("\n\n")
@@ -104,6 +111,7 @@ def main():
         choice = input("      Choose an option: ")
         print("\n\n")
 
+        # Option 1: Investment Calculator navigation
         if choice == "1":
             print("   When prompted, please enter the appropriate information. If any of the prompts do not apply to your current financial situation,")
             print("   please enter '0'. We will never sell your information. Our calculator keeps your information secure and private!")
@@ -125,6 +133,7 @@ def main():
 
                 categories[i] = (input(prompts[i]))
 
+                # Logic to ensure that retirement age is greater than current age.
                 if i == 1:
                     try:
                         curAge = float(categories[0])
@@ -136,6 +145,7 @@ def main():
                         print("   Invalid input")
                         continue
 
+                # Logic to ensure that user's Roth IRA contribution input is no greater than $7000.
                 if i == 8:
                     try:
                         rothContribution = float(categories[i])
@@ -146,41 +156,50 @@ def main():
                         print("   Invalid input.")
                         continue
 
+                # Logic to ensure that user's Individual 401k contribution doesn't exceed $23000
                 if i == 5:
                     try:
                         salary = float(categories[4])
                         individualContribution = float(categories[i])
                         if not validate401k(salary, individualContribution):
                             print("   As per the 2024 federal limit: Individual 401(k) contribution cannot exceed $23,000.")
-                            continue 
+                            continue
                     except ValueError:
                         print("   Invalid input")
                         continue
 
+                # Logic to ensure float or integer inputs only
                 try:
                     categories[i] = float(categories[i])
                     i += 1
                 except ValueError:
                     print(invalid)
 
+            # Call to callBalances for calculation function
             calcBalances(
                 categories[0], categories[1], categories[2], categories[3],
                 categories[4], categories[5], categories[6], categories[7],
                 categories[8], categories[9], categories[10], categories[11])
 
+        # If option 2 selected: navigation to FAQ
         elif choice == "2":
             about()
             time.sleep(10)
+        # Quits application if option 3 is selected.
         elif choice == "3":
-            print("Thank you for using Investly. We hope to see you soon!")
-            print("\n $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
-
-            return
-        else:
-            print("You entered an invalid option. Please enter 1, 2, or 3.")
+            quit = input("Are you sure you want to quit? Type 'y' for yes or 'n' for no: ").strip().lower()
+            if quit == "n":
+                continue
+            elif quit == "y":
+                print("Thank you for using Investly. We hope to see you soon!")
+                print("\n $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
+                return
+            else:
+                print("Invalid input. Type 'y' for yes or 'n' for no:")
 
 
 def about():
+    """Function takes no parameters and outputs an FAQ page to the user."""
     print("\n $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Welcome to the FAQ! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
     print("\n What is Investly?\n")
     print("\n Investly is a compound interest calculator that takes your current and projected account details for 401ks, Roth IRAs, and brokerage acounts.\n")
